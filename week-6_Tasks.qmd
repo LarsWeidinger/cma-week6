@@ -132,10 +132,10 @@ plot(vegetation_index)
 
 # Task 5: Annotate Trajectories from raster data
 ```{r}
-vegetation_index_df <- terra::extract(vegetation_index, st_coordinates(wildschwein_BE))
+# x = spatial raster, y = spatial vector (points, lines, polygons, df or matrix)
+vegetation_index_df <- terra::extract(x = vegetation_index, y =  wildschwein_BE)
 
 wildschwein_BE <- cbind(wildschwein_BE, vegetation_index_df)
 
 head(wildschwein_BE)
 ```
-
