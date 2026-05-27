@@ -1,0 +1,132 @@
+---
+title: "GEO 880 - week 6 - Tasks and Inputs"
+author: "Lars Weidinger"
+date: "today"
+format: 
+  html:
+    fig_caption: true
+    fig-align: center
+    highlight: tango
+    number-sections: false
+    code-fold: true
+    theme: lumen
+    embed-resources: true
+    toc: true
+    toc_depth: 2
+    toc_float: true
+execute:                      # Set global options for execution of code blocks
+  echo: true                  # False = no code printed
+  warning: false
+  message: false
+editor: visual
+---
+
+<!-- The following html code fragment produces fully justified text alignment -->
+
+```{=html}
+<style>
+body {text-align: justify}
+</style>
+```
+
+# Preliminaries
+
+## Set Options
+
+```{r}
+options(warning = FALSE)    # Don't show warnings
+```
+
+## Install or Load packages
+
+```{r}
+#| code-fold: show
+library(pacman)
+
+# Load and if not found in the library will attempt to install the package
+pacman::p_load(here,
+               sf,
+               readr,
+               tmap,
+               dplyr,
+               ggplot2,
+               tidyr,
+               SimilarityMeasures,
+               lubridate,
+               plotly,
+               install = TRUE)
+```
+
+## Store relevant CRS
+
+```{r}
+crs_lv03  <- 21781
+crs_lv95  <- 2056
+crs_wgs84 <- 4326
+```
+
+# Task 1: Import and visualize spatial data
+
+## Boar
+```{r}
+wildschwein_BE <- read_delim("data/wildschwein_BE_2056.csv", ",") |>
+    st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
+```
+
+# Task 2: Annotate Trajectories from vector data
+
+## Import
+```{r}
+fanel <- read_sf("data/Feldaufnahmen_Fanel.gpkg")
+```
+
+## What information does the dataset contain?
+```{r}
+head(fanel)
+
+summary(fanel)
+```
+
+## What is the geometry type of the dataset (possible types are: Point, Lines and Polygons)?
+Polygon
+
+## What are the data types of the other columns?
+FieldID = numeric, dbl  
+Frucht = Character  
+
+## What is the coordinate system of the dataset?
+```{r}
+st_crs(fanel)
+```
+
+# Task 3: Explore annotated trajectories
+```{r}
+wildschwein_summer <- wildschwein_BE |>
+  filter(
+    (DatetimeUTC >= "2014-05-01" & DatetimeUTC < "2014-06-30") |
+    (DatetimeUTC >= "2015-05-01" & DatetimeUTC < "2015-06-30")
+  )
+```
+
+```{r}
+wildschwein_summer <- st_join(wildschwein_summer, fanel)
+
+wildschwein_summer |>
+  ggplot(aes(E, N)) +
+  geom_point(data = wildschwein_summer, col = "red") +
+  geom_path() +
+    
+  geom_point() +
+  
+  coord_fixed() +
+  
+  theme(legend.position = "bottom")
+```
+
+# 
+
+# Task 4: Import and visualize vegetationindex (raster data)
+
+
+# Task 5: Annotate Trajectories from raster data
+
