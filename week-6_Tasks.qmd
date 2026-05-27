@@ -120,14 +120,48 @@ ggplot(fanel) +
 
 # Task 3: Explore annotated trajectories
 ```{r}
+# this code chunk was based on Javier Fellers solution since I struggled with a nice idea
 
+summary_df <- wildschwein_summer |>
+  st_drop_geometry() |>
+  group_by(DatetimeUTC, TierName, Frucht) |>
+  summarize(n=n(), .groups ="drop")
+
+ggplot(summary_df,
+       aes(x = DatetimeUTC, y = Frucht, fill = n)) +
+  geom_tile() +
+  
+  facet_wrap(~ TierName) +
+  
+  scale_fill_gradient(
+    low = "#fff5eb",
+    high = "#cc4c02") +
+  
+  theme_minimal() +
+  
+  labs(
+    title = "Animal presence in Crop Types in May-June of 2014 and 2015",
+    x = "Date",
+    y = "Crop type"
+  )
 ```
 
 # Task 4: Import and visualize vegetationindex (raster data)
 ```{r}
 vegetation_index <- terra::rast("data/vegetationshoehe_LFI.tif")
+```
 
+## Plot
+```{r}
+# using simple plot
 plot(vegetation_index)
+```
+
+## Tmap
+```{r}
+# using tmap
+tm_shape(vegetation_index) +
+  tm_raster(palette = "viridis")
 ```
 
 # Task 5: Annotate Trajectories from raster data
