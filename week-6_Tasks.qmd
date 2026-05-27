@@ -54,6 +54,8 @@ pacman::p_load(here,
                SimilarityMeasures,
                lubridate,
                plotly,
+               terra, 
+               tmap,
                install = TRUE)
 ```
 
@@ -72,8 +74,6 @@ crs_wgs84 <- 4326
 wildschwein_BE <- read_delim("data/wildschwein_BE_2056.csv", ",") |>
     st_as_sf(coords = c("E", "N"), crs = 2056, remove = FALSE)
 ```
-
-# Task 2: Annotate Trajectories from vector data
 
 ## Import
 ```{r}
@@ -99,7 +99,7 @@ Frucht = Character
 st_crs(fanel)
 ```
 
-# Task 3: Explore annotated trajectories
+# Task 2: Annotate Trajectories from vector data
 ```{r}
 wildschwein_summer <- wildschwein_BE |>
   filter(
@@ -109,24 +109,33 @@ wildschwein_summer <- wildschwein_BE |>
 ```
 
 ```{r}
+# join the two datasets
 wildschwein_summer <- st_join(wildschwein_summer, fanel)
 
-wildschwein_summer |>
-  ggplot(aes(E, N)) +
-  geom_point(data = wildschwein_summer, col = "red") +
-  geom_path() +
-    
-  geom_point() +
-  
-  coord_fixed() +
-  
-  theme(legend.position = "bottom")
+# visualisation
+ggplot(fanel) +
+  geom_sf(aes(fill = Frucht)) +
+  geom_sf(data = wildschwein_summer)
 ```
 
-# 
+# Task 3: Explore annotated trajectories
+```{r}
+
+```
 
 # Task 4: Import and visualize vegetationindex (raster data)
+```{r}
+vegetation_index <- terra::rast("data/vegetationshoehe_LFI.tif")
 
+plot(vegetation_index)
+```
 
 # Task 5: Annotate Trajectories from raster data
+```{r}
+vegetation_index_df <- terra::extract(vegetation_index, st_coordinates(wildschwein_BE))
+
+wildschwein_BE <- cbind(wildschwein_BE, vegetation_index_df)
+
+head(wildschwein_BE)
+```
 
